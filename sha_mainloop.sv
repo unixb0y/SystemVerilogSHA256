@@ -4,7 +4,8 @@
 module sha_mainloop	#(parameter PADDED_SIZE = 512)
 					(input logic [PADDED_SIZE-1:0] padded,
 					input logic clk, rst,
-					output logic [255:0] hashed);
+					output logic [255:0] hashed,
+					output logic done);
 
 	function [31:0] K;
 		input [6:0] x;
@@ -62,12 +63,13 @@ module sha_mainloop	#(parameter PADDED_SIZE = 512)
 	logic [31:0] a, b, c, d, e, f, g, h, t1, t2;
 	logic [31:0] h1, h2, h3, h4, h5, h6, h7, h8;
 
-	genvar i;
+	// genvar i;
 	logic [6:0] j;
+	logic [6:0] i;
 
 	localparam N = PADDED_SIZE/512; // number of blocks
 
-	for(i=0; i<N; i=i+1) begin
+	// for(i=0; i<N; i=i+1) begin
 
 		logic [31:0] ch_efg, maj_abc, sum0_a, sum1_e, kj, wj;
 
@@ -89,6 +91,7 @@ module sha_mainloop	#(parameter PADDED_SIZE = 512)
 
 		always @(posedge clk or posedge rst) begin
 			if(rst) begin
+				i 	<= 1'b0;
 				j 	<= 1'bX;
 				h1 	<= 32'h6a09e667;
 				h2 	<= 32'hbb67ae85;
@@ -99,7 +102,7 @@ module sha_mainloop	#(parameter PADDED_SIZE = 512)
 				h7 	<= 32'h1f83d9ab;
 				h8 	<= 32'h5be0cd19;
 			end
-			else if (^j === 1'bX) begin
+			else if (^j === 1'bX && ^i !== 1'bX) begin
 				a <= h1;
 				b <= h2;
 				c <= h3;
@@ -130,10 +133,15 @@ module sha_mainloop	#(parameter PADDED_SIZE = 512)
 				h6 <= f + h6;
 				h7 <= g + h7;
 				h8 <= h + h8;
-				j <= j+1;
+				j <= 1'bX;
+				if (i<N-1) i <= i+1;
+				else begin
+					i <= 1'bX;
+					done <= 1'b1;
+				end
 			end
 		end
-	end
+	// end
 
 	assign hashed = {h1, h2, h3, h4, h5, h6, h7, h8};
 endmodule
