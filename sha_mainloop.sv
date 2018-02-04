@@ -13,8 +13,9 @@ module sha_mainloop	#(parameter PADDED_SIZE = 512)
 
 	function automatic [31:0] W;
 		input [6:0] x;
+		input [6:0] y;
 		if(^x === 1'bX) W = 32'h777;
-		else W = (x<16) ? padded[(511-x*32) -: 32] : rho1(W(x-2)) + W(x-7) + rho0(W(x-15)) + W(x-16);
+		else W = (x<16) ? padded[((PADDED_SIZE-1-y*512)-x*32) -: 32] : rho1(W(x-2, y)) + W(x-7, y) + rho0(W(x-15, y)) + W(x-16, y);
 	endfunction
 
 	function automatic [31:0] rho0;
@@ -75,7 +76,7 @@ module sha_mainloop	#(parameter PADDED_SIZE = 512)
 			maj_abc = maj(a,b,c);
 			sum0_a = sum0(a);
 			sum1_e = sum1(e);
-			wj = W(j);
+			wj = W(j, i);
 			kj = K(j);
 		end
 

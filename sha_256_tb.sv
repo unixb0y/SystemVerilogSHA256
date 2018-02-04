@@ -8,7 +8,7 @@ module sha_256_tb;
 
 	function automatic [31:0] padded_size;
 		input [31:0] message_size;
-		padded_size = (message_size+1 > 448) ? ((message_size < 512) ? 1024 : padded_size(message_size-512)) : 512;
+		padded_size = (message_size+1 > 448) ? ((message_size < 512) ? 1024 : padded_size(message_size-512)+512) : 512;
 	endfunction
 
 	sha_256 #(.MSG_SIZE(208), .PADDED_SIZE(padded_size(208))) uut (.message(message), .hashed(hashed), .clk(clk), .rst(rst));
