@@ -52,7 +52,6 @@ module sha_mainloop	#(parameter PADDED_SIZE = 512)
 	function [31:0] sum1;
 		input [31:0] x;
 		if(^x === 1'bX) sum1 = 32'h888;
-		// else sum1 = (x >> 6) ^ (x >> 11) ^ (x >> 25);
 		else sum1 = {x[5:0],x[31:6]} ^ {x[10:0],x[31:11]} ^ {x[24:0],x[31:25]};
 	endfunction
 
@@ -63,85 +62,81 @@ module sha_mainloop	#(parameter PADDED_SIZE = 512)
 	logic [31:0] a, b, c, d, e, f, g, h, t1, t2;
 	logic [31:0] h1, h2, h3, h4, h5, h6, h7, h8;
 
-	// genvar i;
 	logic [6:0] j;
 	logic [6:0] i;
 
 	localparam N = PADDED_SIZE/512; // number of blocks
+	
+	logic [31:0] ch_efg, maj_abc, sum0_a, sum1_e, kj, wj;
 
-	// for(i=0; i<N; i=i+1) begin
+	always_comb begin
+		ch_efg = ch(e,f,g);
+		maj_abc = maj(a,b,c);
+		sum0_a = sum0(a);
+		sum1_e = sum1(e);
+		wj = W(j, i);
+		kj = K(j);
+	end
 
-		logic [31:0] ch_efg, maj_abc, sum0_a, sum1_e, kj, wj;
+	always @(negedge clk) begin
+		// t1 <= h + sum1(e) + ch(e,f,g) + K(j) + W(j);
+		// t2 <= sum0(a) + maj(a,b,c);
+		t1 <= (h + sum1_e + ch_efg + kj + wj)%4294967296;
+		t2 <= (sum0_a + maj_abc)%4294967296;
+	end
 
-		always_comb begin
-			ch_efg = ch(e,f,g);
-			maj_abc = maj(a,b,c);
-			sum0_a = sum0(a);
-			sum1_e = sum1(e);
-			wj = W(j, i);
-			kj = K(j);
+	always @(posedge clk or posedge rst) begin
+		if(rst) begin
+			i 	<= 1'b0;
+			j 	<= 1'bX;
+			h1 	<= 32'h6a09e667;
+			h2 	<= 32'hbb67ae85;
+			h3 	<= 32'h3c6ef372;
+			h4 	<= 32'ha54ff53a;
+			h5 	<= 32'h510e527f;
+			h6 	<= 32'h9b05688c;
+			h7 	<= 32'h1f83d9ab;
+			h8 	<= 32'h5be0cd19;
 		end
-
-		always @(negedge clk) begin
-			// t1 <= h + sum1(e) + ch(e,f,g) + K(j) + W(j);
-			// t2 <= sum0(a) + maj(a,b,c);
-			t1 <= (h + sum1_e + ch_efg + kj + wj)%4294967296;
-			t2 <= (sum0_a + maj_abc)%4294967296;
+		else if (^j === 1'bX && ^i !== 1'bX) begin
+			a <= h1;
+			b <= h2;
+			c <= h3;
+			d <= h4;
+			e <= h5;
+			f <= h6;
+			g <= h7;
+			h <= h8;
+			j <= 1'd0;
 		end
-
-		always @(posedge clk or posedge rst) begin
-			if(rst) begin
-				i 	<= 1'b0;
-				j 	<= 1'bX;
-				h1 	<= 32'h6a09e667;
-				h2 	<= 32'hbb67ae85;
-				h3 	<= 32'h3c6ef372;
-				h4 	<= 32'ha54ff53a;
-				h5 	<= 32'h510e527f;
-				h6 	<= 32'h9b05688c;
-				h7 	<= 32'h1f83d9ab;
-				h8 	<= 32'h5be0cd19;
-			end
-			else if (^j === 1'bX && ^i !== 1'bX) begin
-				a <= h1;
-				b <= h2;
-				c <= h3;
-				d <= h4;
-				e <= h5;
-				f <= h6;
-				g <= h7;
-				h <= h8;
-				j <= 1'd0;
-			end
-			else if (j < 64) begin
-				h <= g;
-				g <= f;
-				f <= e;
-				e <= (d+t1)%4294967296;
-				d <= c;
-				c <= b;
-				b <= a;
-				a <= (t1+t2)%4294967296;
-				j <= j+1;
-			end
-			else if (j == 64) begin
-				h1 <= a + h1;
-				h2 <= b + h2;
-				h3 <= c + h3;
-				h4 <= d + h4;
-				h5 <= e + h5;
-				h6 <= f + h6;
-				h7 <= g + h7;
-				h8 <= h + h8;
-				j <= 1'bX;
-				if (i<N-1) i <= i+1;
-				else begin
-					i <= 1'bX;
-					done <= 1'b1;
-				end
+		else if (j < 64) begin
+			h <= g;
+			g <= f;
+			f <= e;
+			e <= (d+t1)%4294967296;
+			d <= c;
+			c <= b;
+			b <= a;
+			a <= (t1+t2)%4294967296;
+			j <= j+1;
+		end
+		else if (j == 64) begin
+			h1 <= a + h1;
+			h2 <= b + h2;
+			h3 <= c + h3;
+			h4 <= d + h4;
+			h5 <= e + h5;
+			h6 <= f + h6;
+			h7 <= g + h7;
+			h8 <= h + h8;
+			j <= 1'bX;
+			if (i<N-1) i <= i+1;
+			else begin
+				i <= 1'bX;
+				done <= 1'b1;
 			end
 		end
-	// end
+	end
 
 	assign hashed = {h1, h2, h3, h4, h5, h6, h7, h8};
 endmodule
