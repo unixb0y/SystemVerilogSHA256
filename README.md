@@ -1,6 +1,8 @@
 # SystemVerilogSHA256
 
-SystemVerilog SHA256 Hardware Design
+SystemVerilog SHA256 Hardware Design / FPGA Bitcoin Miner  
+
+
 The design can now hash as many bytes as is needed for the application.
 This means it's ready to hash a Bitcoin block, as well (for example).
 
