@@ -19,6 +19,7 @@ Next steps are:
 - [ ] Executing on FPGA
 - [ ] Try a combination with a UART USB bridge
 - [ ] Display hashes via LCD / VGA
+- [ ] Lots of optimization / making it both more efficient and the code more readable
 
 
 Useful resources that I used:  
