@@ -28,3 +28,10 @@ https://en.bitcoin.it/wiki/Genesis_block#cite_note-block-1
 https://webbtc.com/block/000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f.hex  
 (#2):  
 https://www.reddit.com/r/Bitcoin/comments/6gl8ol/how_to_manually_verify_a_hash_from_a_block/
+
+
+# How to use the miner?
+The miner_tb.sv tesbench is the easiest way to use / test the main module.  
+Put a 80 byte BTC block header in the `message` register and execute the simulation!  
+Icarus Verilog will also output the computed result to the command line.  
+As an example, take the first 80 bytes of the block found [here](https://webbtc.com/block/000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f.hex) and compare them to the hash found when you remove the '.hex' from the link, [here](https://webbtc.com/block/000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f).
