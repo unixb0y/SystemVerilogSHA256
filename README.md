@@ -35,3 +35,7 @@ The miner_tb.sv tesbench is the easiest way to use / test the main module.
 Put a 80 byte BTC block header in the `message` register and execute the simulation!  
 Icarus Verilog will also output the computed result to the command line.  
 As an example, take the first 80 bytes of the block found [here](https://webbtc.com/block/000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f.hex) and compare them to the hash found when you remove the '.hex' from the link, [here](https://webbtc.com/block/000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f).
+
+|Communication|
+|:-----------:|
+| [![Find me on Pnut](https://img.shields.io/badge/Pnut-unixb0y-yellowgreen.svg)](http://pnut.io/@unixb0y) [![Find me on Twitter](https://img.shields.io/badge/Twitter-unixb0y-00aced.svg)](https://twitter.com/unixb0y) [![Send me an Email](https://img.shields.io/badge/E--Mail-unixb0y-lightgrey.svg)](mailto:unixb0y@protonmail.com) [![Website](https://img.shields.io/badge/Web-unixb0y-red.svg)](http://unixb0y.github.io)|
