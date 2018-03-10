@@ -13,12 +13,15 @@ The module `sha_256.sv` is a parametrized SHA256 calculator which allows you to 
 All testbenches are running fine in Icarus Verilog and the modules return the right results.  
 As I use this open-source software, that doesn't support System Verilog natively, the modules are always converted to Verilog files with a few simple commands. Because of that I couldn't use exclusive System Verilog features, so it's basically plain Verilog.
 
+Update on the display part: I figured it's easiest to have that part done by an Arduino Nano / 328P, getting the number to display via some pins as there's a great library (Adafruit_SSD1331) that worked perfectly in just a few minutes.
+My Verilog controller for the PmodOLEDrgb is going to be done some time later on!
+
 Next steps are:
 - [X] Getting raw data of the Bitcoin Genesis block (#1)
 - [X] Hashing that (#2)
 - [ ] Executing on FPGA
 - [ ] Try a combination with a UART USB bridge
-- [ ] Display hashes via LCD / VGA
+- [X] Display hashes via LCD / VGA
 - [ ] Lots of optimization / making it both more efficient and the code more readable
 
 
